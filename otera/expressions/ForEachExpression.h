@@ -6,11 +6,12 @@
 #define OTERA_FOREACHEXPRESSION_H
 
 #include "otera/expressions/Expression.h"
+#include "otera/Token.h"
 
 namespace otera {
     class ForEachExpression : public Expression {
     public:
-        explicit ForEachExpression(std::vector<std::string> args);
+        explicit ForEachExpression(std::vector<otera::Token> args);
 
         virtual void AddChild(std::unique_ptr<Expression> expr) override;
 

@@ -6,6 +6,8 @@ This is a list of items:
 - Apple
 - Banana
 
+Yes, 3 == 3.
+
 That's it!
 
 Last line.

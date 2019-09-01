@@ -3,6 +3,7 @@
 //
 
 #include "otera/Value.h"
+#include "otera/StringUtils.h"
 
 #include <stdexcept>
 #include <string>
@@ -24,16 +25,7 @@ otera::Value::Value(std::vector<Value> value) {
 }
 
 bool otera::Value::IsNumeric() {
-    if (this->kind != SIMPLE) {
-        return false;
-    }
-
-    try {
-        std::stoll(this->simple_value);
-        return true;
-    } catch (const std::invalid_argument &) {
-        return false;
-    }
+    return this->kind == SIMPLE && otera::IsNumeric(this->simple_value);
 }
 
 bool otera::Value::IsIterable() {

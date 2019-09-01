@@ -6,11 +6,12 @@
 #define OTERA_IFEXPRESSION_H
 
 #include "otera/expressions/Expression.h"
+#include "otera/Token.h"
 
 namespace otera {
     class IfExpression : public Expression {
     public:
-        explicit IfExpression(std::vector<std::string> args);
+        explicit IfExpression(std::vector<otera::Token> args);
 
         virtual void AddChild(std::unique_ptr<Expression> expr) override;
 
@@ -18,11 +19,9 @@ namespace otera {
 
     private:
         std::vector<std::unique_ptr<Expression>> children;
-        std::string lhs_operand;
-        bool lhs_operand_is_param_name;
+        otera::Token lhs_operand;
         std::string op;
-        std::string rhs_operand;
-        bool rhs_operand_is_param_name;
+        otera::Token rhs_operand;
     };
 }
 

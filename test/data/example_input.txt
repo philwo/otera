@@ -9,6 +9,10 @@ This is a list of items:
 {% end %}
 {% end %}
 
+{% if 3 == 3 %}
+Yes, 3 == 3.
+{% end %}
+
 {{ footer }}
 
 Last line.

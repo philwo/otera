@@ -8,6 +8,7 @@
 #include <string>
 
 #include "otera/Environment.h"
+#include "otera/Token.h"
 
 namespace otera {
     class Template {
@@ -21,7 +22,7 @@ namespace otera {
         std::string Render(const otera::Environment& env);
 
     private:
-        std::vector<std::string> splitArgs(const std::string &buffer) const;
+        std::vector<otera::Token> splitArgs(const std::string &buffer) const;
 
         std::string template_source;
     };

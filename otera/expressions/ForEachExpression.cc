@@ -4,15 +4,19 @@
 
 #include "ForEachExpression.h"
 
-otera::ForEachExpression::ForEachExpression(std::vector<std::string> args) {
-    if (args[0] != "foreach") {
+otera::ForEachExpression::ForEachExpression(std::vector<otera::Token> args) {
+    if (args[0].getKind() != IDENTIFIER || args[0].getValue() != "foreach") {
         throw "ERROR";
     }
-    if (args[2] != "in") {
+    if (args[1].getKind() != IDENTIFIER || args[3].getKind() != IDENTIFIER) {
         throw "ERROR";
     }
-    this->iterator_name = args[1];
-    this->container_name = args[3];
+    if (args[2].getKind() != IDENTIFIER || args[2].getValue() != "in") {
+        throw "ERROR";
+    }
+
+    this->iterator_name = args[1].getValue();
+    this->container_name = args[3].getValue();
 }
 
 void otera::ForEachExpression::AddChild(std::unique_ptr<Expression> expr) {

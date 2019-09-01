@@ -10,6 +10,7 @@
 #include "otera/expressions/ProgramExpression.h"
 #include "otera/expressions/ForEachExpression.h"
 #include "otera/expressions/IfExpression.h"
+#include "otera/Token.h"
 
 #include <stack>
 #include <string>
@@ -89,7 +90,7 @@ std::string otera::Template::Render(const otera::Environment &env) {
             case PRINT_COMMAND_ENDING:
                 if (c == '}') {
                     state = TEXT;
-                    otera::trim(buffer);
+                    otera::Trim(buffer);
                     std::unique_ptr<PrintParameterExpression> expr = std::make_unique<PrintParameterExpression>(
                             std::move(buffer));
                     expression_stack.top()->AddChild(std::move(expr));
@@ -109,19 +110,23 @@ std::string otera::Template::Render(const otera::Environment &env) {
             case COMPLEX_COMMAND_ENDING:
                 if (c == '}') {
                     state = TEXT;
-                    otera::trim(buffer);
-                    std::vector<std::string> command_args = splitArgs(buffer);
+                    otera::Trim(buffer);
+                    std::vector<otera::Token> command_args = splitArgs(buffer);
                     if (command_args.size() == 0) {
                         throw "ERROR";
                     }
 
-                    if (command_args[0] == "foreach") {
+                    if (command_args[0].getKind() != IDENTIFIER) {
+                        throw "ERROR";
+                    }
+
+                    if (command_args[0].getValue() == "foreach") {
                         std::unique_ptr<ForEachExpression> expr = std::make_unique<ForEachExpression>(command_args);
                         expression_stack.push(std::move(expr));
-                    } else if (command_args[0] == "if") {
+                    } else if (command_args[0].getValue() == "if") {
                         std::unique_ptr<IfExpression> expr = std::make_unique<IfExpression>(command_args);
                         expression_stack.push(std::move(expr));
-                    } else if (command_args[0] == "end") {
+                    } else if (command_args[0].getValue() == "end") {
                         if (expression_stack.size() == 1) {
                             throw "ERROR";
                         }
@@ -151,17 +156,27 @@ std::string otera::Template::Render(const otera::Environment &env) {
     return expression_stack.top()->Execute(env);
 }
 
-std::vector<std::string> otera::Template::splitArgs(const std::string &buffer) const {
+std::vector<otera::Token> otera::Template::splitArgs(const std::string &buffer) const {
     std::stringstream bufstream(buffer);
-    std::vector<std::string> command_args;
+    std::vector<otera::Token> command_args;
     while (bufstream.good()) {
+        while (bufstream.peek() == ' ') {
+            bufstream.get();
+        }
         char next_char = bufstream.peek();
-        next_token_is_quoted_string = next_char == '"';
+        bool next_token_is_quoted_string = next_char == '"';
 
         std::string token;
         bufstream >> std::quoted(token);
-        if (!token.empty()) {
-            command_args.push_back(token);
+
+        if (token.empty()) {
+            continue;
+        } else if (next_token_is_quoted_string) {
+            command_args.push_back(Token(STRING, token));
+        } else if (otera::IsNumeric(token)) {
+            command_args.push_back(Token(INTEGER, token));
+        } else {
+            command_args.push_back(Token(IDENTIFIER, token));
         }
     }
     return command_args;
