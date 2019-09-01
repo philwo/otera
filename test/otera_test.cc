@@ -12,9 +12,31 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#include "gtest/gtest.h"
+#include <iostream>
+#include <fstream>
+#include <sstream>
 
-TEST(OteraTest, ExampleTest) {
-    int test = 0 + 1;
-    EXPECT_EQ(test, 1);
+#include "gtest/gtest.h"
+#include "otera/Otera.h"
+
+TEST(OteraTest, FullExampleTest) {
+    std::ifstream input_file("test/data/example_input.txt");
+    std::ifstream expected_output_file("test/data/example_output.txt");
+
+    ASSERT_FALSE(input_file.fail()) << "file test/data/example_input.txt not found";
+    ASSERT_FALSE(expected_output_file.fail()) << "file test/data/example_output.txt not found";
+
+    otera::Environment env;
+    env.SetParameter("header", otera::Value("Hello world!"));
+    env.SetParameter("somearray", otera::Value(
+            std::vector<otera::Value>{otera::Value("Apple"), otera::Value("Banana"), otera::Value("Citrus")}));
+    env.SetParameter("footer", otera::Value("That's it!"));
+
+    otera::Template otmpl(input_file);
+    std::string result = otmpl.Render(env);  // throws on error
+
+    std::stringstream expected_output;
+    expected_output << expected_output_file.rdbuf();
+
+    ASSERT_EQ(result, expected_output.str());
 }

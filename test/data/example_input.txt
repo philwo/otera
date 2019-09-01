@@ -6,8 +6,8 @@ This is a list of items:
 {% foreach item in somearray %}
 {% if item != "Citrus" %}
 - {{ item }}
-{% endif %}
-{% endforeach %}
+{% end %}
+{% end %}
 
 {{ footer }}
 
