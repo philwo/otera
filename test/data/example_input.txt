@@ -1,0 +1,14 @@
+First line.
+
+{{ header }}
+
+This is a list of items:
+{% foreach item in somearray %}
+{% if item != "Citrus" %}
+- {{ item }}
+{% endif %}
+{% endforeach %}
+
+{{ footer }}
+
+Last line.

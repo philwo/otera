@@ -1,3 +1,7 @@
+# Bazel stuff
+/bazel-*
+/.clwb
+
 # Prerequisites
 *.d
 
