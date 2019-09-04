@@ -1,20 +1,30 @@
+// Copyright 2019 Philipp Wollermann. All rights reserved.
 //
-// Created by philwo on 9/1/19.
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
 //
+//    http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
 
 #include "IfExpression.h"
 
 otera::IfExpression::IfExpression(std::vector<otera::Token> args) {
     if (args[0].getKind() != IDENTIFIER || args[0].getValue() != "if") {
-        throw "ERROR";
+        throw std::logic_error("IfExpression, but first arg is not 'if'");
     }
 
     if (args.size() != 4) {
-        throw "ERROR";
+        throw std::invalid_argument("`if` syntax error: needs exactly three arguments: {% if A <operator> B %}");
     }
 
     if (args[2].getKind() != IDENTIFIER) {
-        throw "ERROR";
+        throw std::invalid_argument("`if` syntax error: operator not valid (e.g. use ==, !=, >, <, ...)");
     }
 
     this->lhs_operand = args[1];
@@ -26,9 +36,7 @@ void otera::IfExpression::AddChild(std::unique_ptr<Expression> expr) {
     this->children.push_back(std::move(expr));
 }
 
-std::string otera::IfExpression::Execute(const otera::Environment &env) {
-    std::string result;
-
+void otera::IfExpression::Execute(const otera::Environment &env, std::ostream &output_stream) {
     otera::Value lhs =
             this->lhs_operand.getKind() == IDENTIFIER ? env.GetParameter(this->lhs_operand.getValue()) : Value(
                     this->lhs_operand.getValue());
@@ -50,14 +58,16 @@ std::string otera::IfExpression::Execute(const otera::Environment &env) {
     } else if (op == "<=") {
         condition = lhs <= rhs;
     } else {
-        throw "ERROR";
+        throw std::invalid_argument("`if` syntax error: invalid operator '" + op + "'");
     }
 
     if (condition) {
         for (auto &&expr : this->children) {
-            result.append(expr->Execute(env));
+            expr->Execute(env, output_stream);
         }
     }
+}
 
-    return result;
+std::string otera::IfExpression::GetCommandName() {
+    return std::string("{% if ... %}");
 }

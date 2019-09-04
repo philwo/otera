@@ -17,6 +17,7 @@
 using std::cerr;
 using std::endl;
 
+// TODO(philwo) - implement a small CLI tool that utilizes the Otera library.
 int main(int argc, char *argv[]) {
     cerr << "otera template engine" << endl;
     return 0;

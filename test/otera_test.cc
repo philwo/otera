@@ -20,10 +20,10 @@
 #include "otera/Otera.h"
 
 TEST(OteraTest, FullExampleTest) {
-    std::ifstream input_file("test/data/example_input.txt");
+    std::unique_ptr<std::ifstream> input_file = std::make_unique<std::ifstream>("test/data/example_input.txt");
     std::ifstream expected_output_file("test/data/example_output.txt");
 
-    ASSERT_FALSE(input_file.fail()) << "file test/data/example_input.txt not found";
+    ASSERT_FALSE(input_file->fail()) << "file test/data/example_input.txt not found";
     ASSERT_FALSE(expected_output_file.fail()) << "file test/data/example_output.txt not found";
 
     otera::Environment env;
@@ -32,11 +32,46 @@ TEST(OteraTest, FullExampleTest) {
             std::vector<otera::Value>{otera::Value("Apple"), otera::Value("Banana"), otera::Value("Citrus")}));
     env.SetParameter("footer", otera::Value("That's it!"));
 
-    otera::Template otmpl(input_file);
-    std::string result = otmpl.Render(env);  // throws on error
+    std::stringstream result;
+    otera::Template otmpl(std::move(input_file));
+    ASSERT_NO_THROW(otmpl.Render(env, result));
 
     std::stringstream expected_output;
     expected_output << expected_output_file.rdbuf();
 
-    ASSERT_EQ(result, expected_output.str());
+    ASSERT_EQ(result.str(), expected_output.str());
+}
+
+TEST(OteraTest, ErrorMessageTest) {
+    std::unique_ptr<std::ifstream> input_file = std::make_unique<std::ifstream>("test/data/failing_unknown_command.txt");
+
+    ASSERT_FALSE(input_file->fail()) << "file test/data/failing_unknown_command.txt not found";
+
+    otera::Environment env;
+    otera::Template otmpl(std::move(input_file));
+    std::stringstream result;
+
+    try {
+        otmpl.Render(env, result);
+        FAIL() << "expected otmpl.Render to throw std::invalid_argument";
+    } catch (const std::invalid_argument &e) {
+        ASSERT_STREQ(e.what(), "3:14: unknown command: unknown");
+    }
+}
+
+TEST(OteraTest, FailingForEachTest) {
+    std::unique_ptr<std::ifstream> input_file = std::make_unique<std::ifstream>("test/data/failing_foreach.txt");
+
+    ASSERT_FALSE(input_file->fail()) << "file test/data/failing_foreach.txt not found";
+
+    otera::Environment env;
+    otera::Template otmpl(std::move(input_file));
+    std::stringstream result;
+
+    try {
+        otmpl.Render(env, result);
+        FAIL() << "expected otmpl.Render to throw std::invalid_argument";
+    } catch (const std::invalid_argument &e) {
+        ASSERT_STREQ(e.what(), "{% foreach item in container %}: container is not iterable");
+    }
 }
