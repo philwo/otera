@@ -22,7 +22,7 @@
 
 int main(int argc, char *argv[]) {
     if (argc != 2) {
-        std::cerr << argv[0] << " <input.txt>" << std::endl;
+        std::cerr << argv[0] << " <input.txt>\n";
         return 1;
     }
 
@@ -30,7 +30,7 @@ int main(int argc, char *argv[]) {
     std::unique_ptr<std::ifstream> input_file = std::make_unique<std::ifstream>(argv[1]);
 
     if (input_file->fail()) {
-        std::cerr << "Could not open input file." << std::endl;
+        std::cerr << "Could not open input file.\n";
         return 1;
     }
 
@@ -47,8 +47,7 @@ int main(int argc, char *argv[]) {
     try {
         otmpl.Render(env, result);
     } catch (const std::invalid_argument &e) {
-        std::cerr << "Error while parsing template:" << std::endl;
-        std::cerr << e.what() << std::endl;
+        std::cerr << "Error while parsing template:\n" << e.what() << "\n";
         return 1;
     }
 
