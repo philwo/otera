@@ -23,7 +23,7 @@
 int main(int argc, char *argv[]) {
     if (argc != 2) {
         std::cerr << argv[0] << " <input.txt>\n";
-        return 1;
+        return EXIT_FAILURE;
     }
 
     // Load our template from a file.
@@ -31,7 +31,7 @@ int main(int argc, char *argv[]) {
 
     if (input_file->fail()) {
         std::cerr << "Could not open input file.\n";
-        return 1;
+        return EXIT_FAILURE;
     }
 
     // Create an environment that holds our parameters.
@@ -48,11 +48,11 @@ int main(int argc, char *argv[]) {
         otmpl.Render(env, result);
     } catch (const std::invalid_argument &e) {
         std::cerr << "Error while parsing template:\n" << e.what() << "\n";
-        return 1;
+        return EXIT_FAILURE;
     }
 
     // Print the output.
     std::cout << result.str();
 
-    return 0;
+    return EXIT_SUCCESS;
 }
