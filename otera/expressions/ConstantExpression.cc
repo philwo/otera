@@ -14,6 +14,9 @@
 
 #include "ConstantExpression.h"
 
+#include <ostream>
+#include <stdexcept>
+
 void otera::ConstantExpression::AddChild(std::unique_ptr<Expression> expr) {
     throw std::logic_error("Cannot add child node to ConstantExpression");
 }

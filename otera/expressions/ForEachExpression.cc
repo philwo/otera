@@ -14,6 +14,8 @@
 
 #include "ForEachExpression.h"
 
+#include <stdexcept>
+
 otera::ForEachExpression::ForEachExpression(std::vector<otera::Token> args) {
     if (args[0].getKind() != IDENTIFIER || args[0].getValue() != "foreach") {
         throw std::logic_error("ForEachExpression, but first arg is not 'foreach'");

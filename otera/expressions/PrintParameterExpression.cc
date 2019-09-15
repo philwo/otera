@@ -14,6 +14,9 @@
 
 #include "PrintParameterExpression.h"
 
+#include <ostream>
+#include <stdexcept>
+
 void otera::PrintParameterExpression::AddChild(std::unique_ptr<Expression> expr) {
     throw std::logic_error("Cannot add child node to PrintParameterExpression.");
 }
