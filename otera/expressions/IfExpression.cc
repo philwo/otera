@@ -14,6 +14,8 @@
 
 #include "IfExpression.h"
 
+#include <stdexcept>
+
 otera::IfExpression::IfExpression(std::vector<otera::Token> args) {
     if (args[0].getKind() != IDENTIFIER || args[0].getValue() != "if") {
         throw std::logic_error("IfExpression, but first arg is not 'if'");
