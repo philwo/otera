@@ -158,7 +158,7 @@ void otera::Template::Render(const otera::Environment &env, std::ostream &output
         }
 
         if (expression_stack.size() != 1) {
-            throw "unclosed " + expression_stack.top()->GetCommandName() + " command found";
+            throw std::invalid_argument("unclosed " + expression_stack.top()->GetCommandName() + " command found");
         }
     } catch (const std::invalid_argument &e) {
         throw std::invalid_argument(std::to_string(line) + ":" + std::to_string(column) + ": " + e.what());
